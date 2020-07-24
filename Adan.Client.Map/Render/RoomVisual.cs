@@ -175,12 +175,14 @@ namespace Adan.Client.Map.Render
                 return;
             }
 
+#if !FORCE_DISPLAY_FULL_MAP
             if (!RoomToVisualize.HasBeenVisited && !RoomToVisualize.IsConnectedToCurrent && !RoomToVisualize.Exits.Any(ex => ex.Room != null && ex.Room.HasBeenVisited))
             {
                 _transform.X = -10000;
                 _transform.Y = -10000;
                 return;
             }
+#endif
 
             _roomDrawing.Pen = RoomToVisualize.IsCurrent
                                    ? _zoneVisual.RenderConstants.CurrentRoomPen
@@ -201,7 +203,11 @@ namespace Adan.Client.Map.Render
             var exitsToRender = RoomToVisualize.Exits;
             if (!RoomToVisualize.HasBeenVisited)
             {
+#if FORCE_DISPLAY_FULL_MAP
+                exitsToRender = RoomToVisualize.Exits;
+#else
                 exitsToRender = RoomToVisualize.Exits.Where(x => x.Room != null && (x.Room.IsCurrent || x.Room.HasBeenVisited));
+#endif
             }
 
             _iconDrawing.Brush = _zoneVisual.RenderConstants.GetRoomIconBrush(_roomToVisualize.Icon);
